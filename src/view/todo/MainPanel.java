@@ -4,22 +4,29 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 public class MainPanel extends JPanel
 {
-
+    //Top panel data members
     private JPanel topPanel;
+
+    private JButton addList;
+    private JButton editList;
+
+    //Spacer Panels
     private JPanel bottomPanel;
     private JPanel leftSpacer; 
     private JPanel rightSpacer;
 
-    private JButton addList;
-    private JButton editList;
+    //List View Panel data members
+    private JScrollPane listScroller;
+    private JPanel listPanel;
+    private JButton listButton;
 
 
     public MainPanel()
@@ -39,9 +46,14 @@ public class MainPanel extends JPanel
         this.leftSpacer = new JPanel();
         this.rightSpacer = new JPanel();
         
-        this.bottomPanel.setPreferredSize(new Dimension(100, 100));
-        this.leftSpacer.setPreferredSize(new Dimension(100, 100));
-        this.rightSpacer.setPreferredSize(new Dimension(100, 100));
+        this.bottomPanel.setPreferredSize(new Dimension(100, 50));
+        this.leftSpacer.setPreferredSize(new Dimension(50, 100));
+        this.rightSpacer.setPreferredSize(new Dimension(50, 100));
+
+        //List View Panel
+        this.listPanel = new JPanel();
+        this.listScroller = new JScrollPane(listPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.listButton = new JButton("List 1");
         
         //Main Panel
         this.setLayout(new BorderLayout());
@@ -49,6 +61,7 @@ public class MainPanel extends JPanel
         
         //Function Calls
         setupPanel();
+        setupListeners();
 
     }
 
@@ -61,7 +74,6 @@ public class MainPanel extends JPanel
         this.editList.setPreferredSize(new Dimension(100,100));
     
         this.topPanel.setBackground(Color.gray);
-
         //Border between buttons and edge of topPanel
         this.topPanel.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -74,9 +86,38 @@ public class MainPanel extends JPanel
         this.leftSpacer.setBackground(Color.red);
         this.rightSpacer.setBackground(Color.blue);
 
+        //List View Panel
+        this.listButton.setMaximumSize(new Dimension(300, 50));
+        this.listButton.setMinimumSize(new Dimension(0, 50));
+        this.listButton.setAlignmentX(listPanel.CENTER_ALIGNMENT);
+
+        this.listPanel.setBackground(Color.MAGENTA);
+        this.listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        this.listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        this.listPanel.add(listButton);
+        this.listScroller.setPreferredSize(new Dimension(100, 800));
+        
         //Main Panel
+        this.add(listScroller, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
     
+    }
+
+    private void setupListeners()
+    {
+        this.listButton.addActionListener(click -> addButton());
+    }
+
+    private void addButton()
+    {
+        JButton newList = new JButton("List");
+        newList.setMaximumSize(new Dimension(300, 50));
+        newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
+
+        this.listPanel.add(newList);
+        this.validate();
+
+        System.out.println("Button Added");
     }
     
 }
