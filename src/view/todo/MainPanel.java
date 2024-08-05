@@ -6,6 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -87,14 +88,11 @@ public class MainPanel extends JPanel
         this.rightSpacer.setBackground(Color.blue);
 
         //List View Panel
-        this.listButton.setMaximumSize(new Dimension(300, 50));
-        this.listButton.setMinimumSize(new Dimension(0, 50));
-        this.listButton.setAlignmentX(listPanel.CENTER_ALIGNMENT);
+
 
         this.listPanel.setBackground(Color.MAGENTA);
         this.listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         this.listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.listPanel.add(listButton);
         this.listScroller.setPreferredSize(new Dimension(100, 800));
         
         //Main Panel
@@ -105,17 +103,21 @@ public class MainPanel extends JPanel
 
     private void setupListeners()
     {
-        this.listButton.addActionListener(click -> addButton());
+        this.addList.addActionListener(click -> addButton());
     }
 
     private void addButton()
     {
-        JButton newList = new JButton("List");
-        newList.setMaximumSize(new Dimension(300, 50));
+        String newName = JOptionPane.showInputDialog("Enter List Name");
+        JButton newList = new JButton(newName);
+        newList.setPreferredSize(new Dimension(10, 50)); 
+        newList.setMaximumSize(new Dimension(1200, 50)); 
+        newList.setMinimumSize(new Dimension(10, 50)); 
         newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
 
         this.listPanel.add(newList);
-        this.validate();
+        this.revalidate();
+        this.repaint();
 
         System.out.println("Button Added");
     }

@@ -15,11 +15,12 @@ import javax.swing.JScrollPane;
 public class TodoPanel extends JPanel 
 {
 	private ArrayList<String> listNames; 
-	private JPanel buttonPanel;
-	private BoxLayout buttonLayout;
-	private JScrollPane scroller; 
+	private JPanel fuckingPanel;
+	private BoxLayout buttontrayofcook;
+	private JScrollPane upanddown; 
 	private JButton list; 
-	
+	private JButton button1; 
+
 	
 
 	
@@ -28,6 +29,8 @@ public class TodoPanel extends JPanel
 		super();
 		
 		//UI Components
+		this.button1 = new JButton();
+		
 		this.buttonPanel = new JPanel();
 		this.listNames = new ArrayList<String>();
 		this.scroller = new JScrollPane(buttonPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
