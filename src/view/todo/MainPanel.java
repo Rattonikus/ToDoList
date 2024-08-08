@@ -11,11 +11,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import controller.todo.TodoController;
+
 public class MainPanel extends JPanel
 {
+
+    private TodoController app; 
+
     //Top panel data members
     private JPanel topPanel;
-
     private JButton addList;
     private JButton editList;
 
@@ -30,10 +34,12 @@ public class MainPanel extends JPanel
     private JButton listButton;
 
 
-    public MainPanel()
+    public MainPanel(TodoController appController)
     {
         super();
         
+        this.app = appController;
+
         //Top Panel
         this.topPanel = new JPanel();
         this.topPanel.setPreferredSize(new Dimension(100, 100));
@@ -75,6 +81,7 @@ public class MainPanel extends JPanel
         this.editList.setPreferredSize(new Dimension(100,100));
     
         this.topPanel.setBackground(Color.gray);
+        
         //Border between buttons and edge of topPanel
         this.topPanel.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -114,12 +121,19 @@ public class MainPanel extends JPanel
         newList.setMaximumSize(new Dimension(1200, 50)); 
         newList.setMinimumSize(new Dimension(10, 50)); 
         newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
+        newList.addActionListener(click -> listClicked("todo", "list", newList));
 
         this.listPanel.add(newList);
         this.revalidate();
         this.repaint();
 
         System.out.println("Button Added");
+    }
+
+    private void listClicked(String panel, String list, JButton button)
+    {
+        System.out.println("List \"" + button.getText() + "\" Clicked");
+        this.app.switchPanel(panel);
     }
     
 }
