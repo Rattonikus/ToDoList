@@ -27,7 +27,7 @@ public class TodoFrame extends JFrame
 	
 	private void setupFrame()
 	{
-		this.setContentPane(panel);
+		this.setContentPane(mainPanel);
 		 this.setSize(500, 900);
 		 this.setMinimumSize(new Dimension(300, 500));
 		 this.setTitle("Java Todo");
