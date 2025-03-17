@@ -18,6 +18,7 @@ public class TodoController
 	public void start()
 	{
 		this.frame = new TodoFrame(this); //Initialize the frame
+
 	}
 
 	public void switchPanel(String panelString)

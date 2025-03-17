@@ -3,12 +3,15 @@ package view.todo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
 import controller.todo.IOController;
@@ -32,8 +35,10 @@ public class MainPanel extends JPanel
     //List View Panel data members
     private JScrollPane listScroller;
     private JPanel listPanel;
-    private JButton listButton;
+    private JPanel editListPanel;
+    private JPanel listContainer; 
 
+    private SpringLayout layout;
 
     public MainPanel(TodoController appController)
     {
@@ -60,16 +65,23 @@ public class MainPanel extends JPanel
 
         //List View Panel
         this.listPanel = new JPanel();
+        this.editListPanel = new JPanel();
+        this.listContainer = new JPanel(); 
+
         this.listScroller = new JScrollPane(listPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.listButton = new JButton("List 1");
+        this.listContainer.add(listScroller);
+        this.listContainer.add(editListPanel);
         
         //Main Panel
         this.setLayout(new BorderLayout());
         this.topPanel.setLayout(new BorderLayout());
+
+        this.layout = new SpringLayout(); 
         
         //Function Calls
         setupPanel();
         setupListeners();
+        setupConstraints();
 
     }
 
@@ -95,23 +107,62 @@ public class MainPanel extends JPanel
         this.leftSpacer.setBackground(Color.red);
         this.rightSpacer.setBackground(Color.blue);
 
+
+        this.listContainer.setLayout(layout);
+
         //List View Panel
 
 
+        //For the list Panel 
         this.listPanel.setBackground(Color.MAGENTA);
         this.listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         this.listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
-            JButton listItem = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
-            this.listPanel.add(listItem);
+            JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
+            newList.setPreferredSize(new Dimension(10, 50)); 
+            newList.setMaximumSize(new Dimension(1200, 50)); 
+            newList.setMinimumSize(new Dimension(10, 50)); 
+            newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
+            newList.addActionListener(click -> listClicked("todo", "list", newList));
+
+        this.listPanel.add(newList);
         }
+
+        //For the edit buttons
+
+        this.editListPanel.setBackground(Color.green);
+        this.editListPanel.setLayout(new BoxLayout(editListPanel, BoxLayout.Y_AXIS));
+        this.editListPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+        {
+            JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
+            newList.setPreferredSize(new Dimension(10, 50)); 
+            newList.setMaximumSize(new Dimension(50, 50)); 
+            newList.setMinimumSize(new Dimension(10, 50)); 
+            newList.setAlignmentX(this.editListPanel.CENTER_ALIGNMENT);
+            newList.addActionListener(click -> listClicked("todo", "list", newList));
+
+        this.editListPanel.add(newList);
+        }
+
         this.listScroller.setPreferredSize(new Dimension(100, 800));
         
         //Main Panel
-        this.add(listScroller, BorderLayout.CENTER);
+        this.add(listContainer, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
     
+    }
+
+    private void setupConstraints()
+    {
+        layout.putConstraint(SpringLayout.NORTH, listScroller, 50, SpringLayout.NORTH, listContainer);
+        layout.putConstraint(SpringLayout.EAST, listScroller, -50, SpringLayout.EAST, listContainer);
+        layout.putConstraint(SpringLayout.WEST, listScroller, 50, SpringLayout.WEST, listContainer);
+        layout.putConstraint(SpringLayout.SOUTH, listScroller, -50, SpringLayout.SOUTH, listContainer);
+
+
+
     }
 
     private void setupListeners()
@@ -122,6 +173,7 @@ public class MainPanel extends JPanel
     private void addButton()
     {
         String newName = JOptionPane.showInputDialog("Enter List Name");
+        IOController.saveToFile("FILE TWO", newName, true);
         JButton newList = new JButton(newName);
         newList.setPreferredSize(new Dimension(10, 50)); 
         newList.setMaximumSize(new Dimension(1200, 50)); 

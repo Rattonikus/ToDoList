@@ -19,7 +19,15 @@ public class IOController
                 {
                     String currentLine = textScanner.nextLine();
                     byte[] bytes = currentLine.getBytes();
-                    fileOutput.write(bytes);
+                    if (append)
+                    {
+                        fileOutput.write('\n');
+                        fileOutput.write(bytes);
+                    }
+                    else
+                    {
+                        fileOutput.write(bytes);
+                    }                    
                 }
             }
 
