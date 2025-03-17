@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import controller.todo.IOController;
 import controller.todo.TodoController;
 
 public class MainPanel extends JPanel
@@ -100,6 +101,11 @@ public class MainPanel extends JPanel
         this.listPanel.setBackground(Color.MAGENTA);
         this.listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         this.listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+        {
+            JButton listItem = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
+            this.listPanel.add(listItem);
+        }
         this.listScroller.setPreferredSize(new Dimension(100, 800));
         
         //Main Panel

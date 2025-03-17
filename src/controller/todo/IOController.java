@@ -2,6 +2,7 @@ package controller.todo;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class IOController 
@@ -41,6 +42,28 @@ public class IOController
                 while(fileScanner.hasNext())
                 {
                     fileContents += fileScanner.nextLine() + "\n";
+                }
+            }
+            
+            catch (Exception e)
+            {
+                TodoController.errorHandler(e);
+            }
+            
+            return fileContents;
+        }
+
+        public static ArrayList<String> loadFromFileAsArray(String fileName)
+        {
+            ArrayList<String> fileContents = new ArrayList<String>(); 
+            
+            File newFile = new File(fileName);
+            
+            try (Scanner fileScanner = new Scanner(newFile))
+            {
+                while(fileScanner.hasNext())
+                {
+                    fileContents.add(fileScanner.nextLine());
                 }
             }
             

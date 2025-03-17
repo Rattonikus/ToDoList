@@ -2,10 +2,12 @@ package view.todo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.time.LocalDateTime;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import controller.todo.TodoController;
@@ -22,6 +24,7 @@ public class TodoPanel extends JPanel
 	private JButton addItemButton;
 	private JButton editItemButton;
 	private JButton backButton; 
+	private JLabel time;
 
 	//List Panel
 	private JPanel listPanel;
@@ -38,6 +41,7 @@ public class TodoPanel extends JPanel
 		this.addItemButton = new JButton("Add Item");
 		this.editItemButton = new JButton("Edit Item");
 		this.backButton = new JButton("Back");
+		this.time = new JLabel(LocalDateTime.now().toString());
 
 		//List Panel
 		this.listPanel = new JPanel();
@@ -56,6 +60,7 @@ public class TodoPanel extends JPanel
 		this.topPanel.add(actionsPanel, BorderLayout.EAST);
 		this.actionsPanel.add(addItemButton);
 		this.actionsPanel.add(editItemButton);
+		this.actionsPanel.add(time);
 		this.actionsPanel.setBackground(Color.GREEN);
 		this.topPanel.add(backButton, BorderLayout.WEST);
 		this.topPanel.setBackground(Color.GREEN);
