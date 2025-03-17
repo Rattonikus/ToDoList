@@ -68,9 +68,10 @@ public class MainPanel extends JPanel
         this.editListPanel = new JPanel();
         this.listContainer = new JPanel(); 
 
-        this.listScroller = new JScrollPane(listPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.listContainer.add(listScroller);
+        this.listContainer.add(listPanel);
         this.listContainer.add(editListPanel);
+        this.listScroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         
         //Main Panel
         this.setLayout(new BorderLayout());
@@ -109,6 +110,7 @@ public class MainPanel extends JPanel
 
 
         this.listContainer.setLayout(layout);
+        
 
         //List View Panel
 
@@ -146,20 +148,26 @@ public class MainPanel extends JPanel
         this.editListPanel.add(newList);
         }
 
-        this.listScroller.setPreferredSize(new Dimension(100, 800));
+        this.listScroller.setPreferredSize(new Dimension(800, 800));
+        this.listScroller.setMinimumSize(new Dimension(500, 500));
+
+        this.listContainer.setPreferredSize(new Dimension(800, 800));
+        this.listContainer.setMinimumSize(new Dimension(500, 500));
+
+        this.listScroller.setViewportView(listContainer);
+
         
         //Main Panel
-        this.add(listContainer, BorderLayout.CENTER);
+        this.add(listScroller, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
     
     }
 
     private void setupConstraints()
     {
-        layout.putConstraint(SpringLayout.NORTH, listScroller, 50, SpringLayout.NORTH, listContainer);
-        layout.putConstraint(SpringLayout.EAST, listScroller, -50, SpringLayout.EAST, listContainer);
-        layout.putConstraint(SpringLayout.WEST, listScroller, 50, SpringLayout.WEST, listContainer);
-        layout.putConstraint(SpringLayout.SOUTH, listScroller, -50, SpringLayout.SOUTH, listContainer);
+        layout.putConstraint(SpringLayout.NORTH, listPanel, 50, SpringLayout.NORTH, listContainer);
+        layout.putConstraint(SpringLayout.EAST, listPanel, -50, SpringLayout.EAST, listContainer);
+        layout.putConstraint(SpringLayout.WEST, listPanel, 50, SpringLayout.WEST, listContainer);
 
 
 
