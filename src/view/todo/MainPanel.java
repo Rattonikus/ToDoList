@@ -7,19 +7,18 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-
 import controller.todo.IOController;
 import controller.todo.TodoController;
 
 public class MainPanel extends JPanel
 {
-
     private TodoController app; 
 
     //Top panel data members
@@ -33,15 +32,10 @@ public class MainPanel extends JPanel
     private JPanel rightSpacer;
 
     //List View Panel data members
-    private JScrollPane listScroller;
-    private JPanel listPanel;
-    private JPanel editListPanel;
     private JPanel listContainer; 
-
-    private ArrayList<JButton> buttonList; 
-
+    private JScrollPane listScroller;
     private SpringLayout layout;
-
+    private ArrayList<JButton> buttonList; 
     private int maxButton; 
 
     public MainPanel(TodoController appController)
@@ -53,6 +47,7 @@ public class MainPanel extends JPanel
         //Top Panel
         this.topPanel = new JPanel();
         this.topPanel.setPreferredSize(new Dimension(100, 100));
+        this.topPanel.setLayout(new BorderLayout());
 
         //Top Panel Buttons
         this.addList = new JButton("Add List");
@@ -68,29 +63,18 @@ public class MainPanel extends JPanel
         this.rightSpacer.setPreferredSize(new Dimension(50, 100));
 
         //List View Panel
-        this.listPanel = new JPanel();
-        this.editListPanel = new JPanel();
         this.listContainer = new JPanel(); 
-
-        //this.listContainer.add(listPanel);
-        //this.listContainer.add(editListPanel);
         this.listScroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-        
-        //Main Panel
-        this.setLayout(new BorderLayout());
-        this.topPanel.setLayout(new BorderLayout());
-
         this.layout = new SpringLayout(); 
-
+        this.buttonList = new ArrayList<JButton>();
         this.maxButton = 50; 
 
-        this.buttonList = new ArrayList<JButton>();
-        
-        //Function Calls
+        //Main Panel
+        this.setLayout(new BorderLayout());
+
+        //Setup functions
         setupPanel();
         setupListeners();
-
     }
 
     private void setupPanel()
@@ -98,10 +82,9 @@ public class MainPanel extends JPanel
         //Top panel buttons 
         this.topPanel.add(addList, BorderLayout.WEST);
         this.topPanel.add(editList, BorderLayout.EAST);
+        this.topPanel.setBackground(Color.gray);
         this.addList.setPreferredSize(new Dimension(100,100));
         this.editList.setPreferredSize(new Dimension(100,100));
-    
-        this.topPanel.setBackground(Color.gray);
         
         //Border between buttons and edge of topPanel
         this.topPanel.setBorder(new EmptyBorder(10,10,10,10));
@@ -115,67 +98,42 @@ public class MainPanel extends JPanel
         this.leftSpacer.setBackground(Color.red);
         this.rightSpacer.setBackground(Color.blue);
 
-
-        this.listContainer.setLayout(layout);
         
-
-        //List View Panel
-
-
-        //For the list Panel 
-        this.listPanel.setBackground(Color.MAGENTA);
-        this.listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        this.listPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        //List container panel
+        this.listContainer.setLayout(layout); 
+        //create list buttons
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
             JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
-            newList.setPreferredSize(new Dimension(10, 50)); 
-            newList.setMaximumSize(new Dimension(1200, 50)); 
-            newList.setMinimumSize(new Dimension(10, 50)); 
+            newList.setPreferredSize(new Dimension(20, 50)); 
             newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
             buttonList.add(newList);
             this.listContainer.add(buttonList.get(i));
-            setupConstraints(newList, i + 1);
+            setupConstraints(buttonList.get(i), i + 1);
             System.out.println("button added");
         }
+        //Update the second value on this to the size of all the buttons in the constraint
+        this.listContainer.setPreferredSize(new Dimension(200, maxButton));
 
 
         //For the edit buttons
-
-        this.editListPanel.setBackground(Color.green);
-        this.editListPanel.setLayout(new BoxLayout(editListPanel, BoxLayout.Y_AXIS));
-        this.editListPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
             String listName = (IOController.loadFromFileAsArray("FILE TWO").get(i) + "-" + i); 
             this.maxButton = this.maxButton += 50; 
             JButton newList = new JButton(listName);
-            newList.setPreferredSize(new Dimension(10, 50)); 
-            newList.setMaximumSize(new Dimension(50, 50)); 
-            newList.setMinimumSize(new Dimension(10, 10)); 
-            newList.setAlignmentX(this.editListPanel.CENTER_ALIGNMENT);
+            newList.setPreferredSize(new Dimension(10, 50));
             newList.addActionListener(click -> listClicked("todo", "list", newList));
-            this.editListPanel.add(newList);
         }
 
-        this.listScroller.setPreferredSize(new Dimension(800, 800));
-        this.listScroller.setMinimumSize(new Dimension(500, 500));
-
-        //this.listContainer.setPreferredSize(new Dimension(800, 600));
-        //Update the second value on this to the size of all the buttons in the constraint
-        this.listContainer.setPreferredSize(new Dimension(800, maxButton));
-
-
-        //this.listContainer.setMinimumSize(new Dimension(500, 500));
-
+        //For scrollbar
         this.listScroller.setViewportView(listContainer);
 
-        
         //Main Panel
         this.add(listScroller, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
-    
     }
 
     private void setupConstraints(JButton someButton, int index)
@@ -189,20 +147,21 @@ public class MainPanel extends JPanel
     private void setupListeners()
     {
         this.addList.addActionListener(click -> addButton());
-        this.editList.addActionListener(click -> changeButtonName());
+        this.editList.addActionListener(click -> editClicked());
     }
 
-    private void changeButtonName()
+    private void editClicked()
     {
-        System.out.println(buttonList.get(1).getText());
+        System.out.println("edit clicked");
+        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+        {
+            layout.putConstraint(SpringLayout.EAST, buttonList.get(i), -200, SpringLayout.EAST, listContainer);
+            this.revalidate();
+            this.repaint();
+        }
 
-        buttonList.get(1).setText("new name hahaha");
-        System.out.println(buttonList.get(1).getText());
-    }
-
-    private void createEdit(JButton listItem)
-    {
-        
+        this.revalidate();
+        this.repaint();
     }
 
     private void addButton()
@@ -211,9 +170,6 @@ public class MainPanel extends JPanel
         IOController.saveToFile("FILE TWO", newName, true);
         JButton newList = new JButton(newName);
         newList.setPreferredSize(new Dimension(10, 50)); 
-        newList.setMaximumSize(new Dimension(1200, 50)); 
-        newList.setMinimumSize(new Dimension(10, 50)); 
-        newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
         newList.addActionListener(click -> listClicked("todo", "list", newList));
         setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size());
 
@@ -221,7 +177,6 @@ public class MainPanel extends JPanel
         this.maxButton = this.maxButton += 50; 
         this.listContainer.setPreferredSize(new Dimension(800, maxButton));
         
-
         this.revalidate();
         this.repaint();
 
