@@ -3,8 +3,7 @@ package view.todo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -39,6 +38,8 @@ public class MainPanel extends JPanel
     private JPanel listContainer; 
 
     private SpringLayout layout;
+
+    private int maxButton; 
 
     public MainPanel(TodoController appController)
     {
@@ -78,6 +79,8 @@ public class MainPanel extends JPanel
         this.topPanel.setLayout(new BorderLayout());
 
         this.layout = new SpringLayout(); 
+
+        this.maxButton = 50; 
         
         //Function Calls
         setupPanel();
@@ -127,7 +130,7 @@ public class MainPanel extends JPanel
             newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
             this.listContainer.add(newList);
-            setupConstraints(newList, i);
+            setupConstraints(newList, i + 1);
             System.out.println("button added");
         }
 
@@ -139,24 +142,25 @@ public class MainPanel extends JPanel
         this.editListPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
+            this.maxButton = this.maxButton += 50; 
             JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
             newList.setPreferredSize(new Dimension(10, 50)); 
             newList.setMaximumSize(new Dimension(50, 50)); 
-            newList.setMinimumSize(new Dimension(10, 50)); 
+            newList.setMinimumSize(new Dimension(10, 10)); 
             newList.setAlignmentX(this.editListPanel.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
-
-        this.editListPanel.add(newList);
+            this.editListPanel.add(newList);
         }
 
         this.listScroller.setPreferredSize(new Dimension(800, 800));
         this.listScroller.setMinimumSize(new Dimension(500, 500));
 
-        this.listContainer.setPreferredSize(new Dimension(800, 800));
-        this.listContainer.setMinimumSize(new Dimension(500, 500));
+        //this.listContainer.setPreferredSize(new Dimension(800, 600));
+        //Update the second value on this to the size of all the buttons in the constraint
+        this.listContainer.setPreferredSize(new Dimension(800, maxButton));
 
-        this.listPanel.setPreferredSize(new Dimension(800, 800));
-        this.listPanel.setMinimumSize(new Dimension(500, 500));
+
+        //this.listContainer.setMinimumSize(new Dimension(500, 500));
 
         this.listScroller.setViewportView(listContainer);
 
@@ -169,7 +173,7 @@ public class MainPanel extends JPanel
 
     private void setupConstraints(JButton someButton, int index)
     {
-
+        
         layout.putConstraint(SpringLayout.NORTH, someButton, index * 50, SpringLayout.NORTH, listContainer);
         layout.putConstraint(SpringLayout.EAST, someButton, -50, SpringLayout.EAST, listContainer);
         layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.WEST, listContainer);
@@ -190,8 +194,12 @@ public class MainPanel extends JPanel
         newList.setMinimumSize(new Dimension(10, 50)); 
         newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
         newList.addActionListener(click -> listClicked("todo", "list", newList));
+        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size());
 
         this.listContainer.add(newList);
+        this.maxButton = this.maxButton += 50; 
+        this.listContainer.setPreferredSize(new Dimension(800, maxButton));
+
         this.revalidate();
         this.repaint();
 
