@@ -3,7 +3,7 @@ package view.todo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
+
 
 import controller.todo.IOController;
 import controller.todo.TodoController;
@@ -36,6 +37,8 @@ public class MainPanel extends JPanel
     private JPanel listPanel;
     private JPanel editListPanel;
     private JPanel listContainer; 
+
+    private ArrayList<JButton> buttonList; 
 
     private SpringLayout layout;
 
@@ -81,6 +84,8 @@ public class MainPanel extends JPanel
         this.layout = new SpringLayout(); 
 
         this.maxButton = 50; 
+
+        this.buttonList = new ArrayList<JButton>();
         
         //Function Calls
         setupPanel();
@@ -129,7 +134,8 @@ public class MainPanel extends JPanel
             newList.setMinimumSize(new Dimension(10, 50)); 
             newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
-            this.listContainer.add(newList);
+            buttonList.add(newList);
+            this.listContainer.add(buttonList.get(i));
             setupConstraints(newList, i + 1);
             System.out.println("button added");
         }
@@ -142,8 +148,9 @@ public class MainPanel extends JPanel
         this.editListPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
+            String listName = (IOController.loadFromFileAsArray("FILE TWO").get(i) + "-" + i); 
             this.maxButton = this.maxButton += 50; 
-            JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
+            JButton newList = new JButton(listName);
             newList.setPreferredSize(new Dimension(10, 50)); 
             newList.setMaximumSize(new Dimension(50, 50)); 
             newList.setMinimumSize(new Dimension(10, 10)); 
@@ -182,6 +189,20 @@ public class MainPanel extends JPanel
     private void setupListeners()
     {
         this.addList.addActionListener(click -> addButton());
+        this.editList.addActionListener(click -> changeButtonName());
+    }
+
+    private void changeButtonName()
+    {
+        System.out.println(buttonList.get(1).getText());
+
+        buttonList.get(1).setText("new name hahaha");
+        System.out.println(buttonList.get(1).getText());
+    }
+
+    private void createEdit(JButton listItem)
+    {
+        
     }
 
     private void addButton()
@@ -199,12 +220,15 @@ public class MainPanel extends JPanel
         this.listContainer.add(newList);
         this.maxButton = this.maxButton += 50; 
         this.listContainer.setPreferredSize(new Dimension(800, maxButton));
+        
 
         this.revalidate();
         this.repaint();
 
         System.out.println("Button Added");
     }
+
+
 
     private void listClicked(String panel, String list, JButton button)
     {
