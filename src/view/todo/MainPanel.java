@@ -35,7 +35,8 @@ public class MainPanel extends JPanel
     private JPanel listContainer; 
     private JScrollPane listScroller;
     private SpringLayout layout;
-    private ArrayList<JButton> buttonList; 
+    private ArrayList<JButton> listButtons;
+    private ArrayList<JButton> editButtons; 
     private int maxButton; 
 
     public MainPanel(TodoController appController)
@@ -66,7 +67,8 @@ public class MainPanel extends JPanel
         this.listContainer = new JPanel(); 
         this.listScroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.layout = new SpringLayout(); 
-        this.buttonList = new ArrayList<JButton>();
+        this.listButtons = new ArrayList<JButton>();
+        this.editButtons = new ArrayList<JButton>();
         this.maxButton = 50; 
 
         //Main Panel
@@ -109,9 +111,9 @@ public class MainPanel extends JPanel
             newList.setPreferredSize(new Dimension(20, 50)); 
             newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
-            buttonList.add(newList);
-            this.listContainer.add(buttonList.get(i));
-            setupConstraints(buttonList.get(i), i + 1);
+            listButtons.add(newList);
+            this.listContainer.add(listButtons.get(i));
+            setupConstraints(listButtons.get(i), i + 1, "List");
             System.out.println("button added");
         }
         //Update the second value on this to the size of all the buttons in the constraint
@@ -126,6 +128,8 @@ public class MainPanel extends JPanel
             JButton newList = new JButton(listName);
             newList.setPreferredSize(new Dimension(10, 50));
             newList.addActionListener(click -> listClicked("todo", "list", newList));
+            editButtons.add(newList);
+
         }
 
         //For scrollbar
@@ -136,9 +140,8 @@ public class MainPanel extends JPanel
         this.add(topPanel, BorderLayout.NORTH);
     }
 
-    private void setupConstraints(JButton someButton, int index)
+    private void setupConstraints(JButton someButton, int index, String type)
     {
-        
         layout.putConstraint(SpringLayout.NORTH, someButton, index * 50, SpringLayout.NORTH, listContainer);
         layout.putConstraint(SpringLayout.EAST, someButton, -50, SpringLayout.EAST, listContainer);
         layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.WEST, listContainer);
@@ -155,13 +158,16 @@ public class MainPanel extends JPanel
         System.out.println("edit clicked");
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         {
-            layout.putConstraint(SpringLayout.EAST, buttonList.get(i), -200, SpringLayout.EAST, listContainer);
-            this.revalidate();
-            this.repaint();
-        }
+            layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -200, SpringLayout.EAST, listContainer);
 
+            layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
+            layout.putConstraint(SpringLayout.EAST, editButtons.get(i), -50, SpringLayout.EAST, listContainer);
+            layout.putConstraint(SpringLayout.WEST, editButtons.get(i), 50, SpringLayout.EAST, listButtons.get(i));
+
+            this.listContainer.add(editButtons.get(i));
+        }
+        
         this.revalidate();
-        this.repaint();
     }
 
     private void addButton()
@@ -171,7 +177,7 @@ public class MainPanel extends JPanel
         JButton newList = new JButton(newName);
         newList.setPreferredSize(new Dimension(10, 50)); 
         newList.addActionListener(click -> listClicked("todo", "list", newList));
-        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size());
+        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size(), "List");
 
         this.listContainer.add(newList);
         this.maxButton = this.maxButton += 50; 
