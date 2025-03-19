@@ -68,8 +68,8 @@ public class MainPanel extends JPanel
         this.editListPanel = new JPanel();
         this.listContainer = new JPanel(); 
 
-        this.listContainer.add(listPanel);
-        this.listContainer.add(editListPanel);
+        //this.listContainer.add(listPanel);
+        //this.listContainer.add(editListPanel);
         this.listScroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         
@@ -82,7 +82,6 @@ public class MainPanel extends JPanel
         //Function Calls
         setupPanel();
         setupListeners();
-        setupConstraints();
 
     }
 
@@ -125,11 +124,13 @@ public class MainPanel extends JPanel
             newList.setPreferredSize(new Dimension(10, 50)); 
             newList.setMaximumSize(new Dimension(1200, 50)); 
             newList.setMinimumSize(new Dimension(10, 50)); 
-            newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
+            newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
-
-        this.listPanel.add(newList);
+            this.listContainer.add(newList);
+            setupConstraints(newList, i);
+            System.out.println("button added");
         }
+
 
         //For the edit buttons
 
@@ -154,6 +155,9 @@ public class MainPanel extends JPanel
         this.listContainer.setPreferredSize(new Dimension(800, 800));
         this.listContainer.setMinimumSize(new Dimension(500, 500));
 
+        this.listPanel.setPreferredSize(new Dimension(800, 800));
+        this.listPanel.setMinimumSize(new Dimension(500, 500));
+
         this.listScroller.setViewportView(listContainer);
 
         
@@ -163,14 +167,12 @@ public class MainPanel extends JPanel
     
     }
 
-    private void setupConstraints()
+    private void setupConstraints(JButton someButton, int index)
     {
-        layout.putConstraint(SpringLayout.NORTH, listPanel, 50, SpringLayout.NORTH, listContainer);
-        layout.putConstraint(SpringLayout.EAST, listPanel, -50, SpringLayout.EAST, listContainer);
-        layout.putConstraint(SpringLayout.WEST, listPanel, 50, SpringLayout.WEST, listContainer);
 
-
-
+        layout.putConstraint(SpringLayout.NORTH, someButton, index * 50, SpringLayout.NORTH, listContainer);
+        layout.putConstraint(SpringLayout.EAST, someButton, -50, SpringLayout.EAST, listContainer);
+        layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.WEST, listContainer);
     }
 
     private void setupListeners()
@@ -189,7 +191,7 @@ public class MainPanel extends JPanel
         newList.setAlignmentX(this.listPanel.CENTER_ALIGNMENT);
         newList.addActionListener(click -> listClicked("todo", "list", newList));
 
-        this.listPanel.add(newList);
+        this.listContainer.add(newList);
         this.revalidate();
         this.repaint();
 
