@@ -35,9 +35,9 @@ public class MainPanel extends JPanel
     private SpringLayout layout;
     private ArrayList<JButton> listButtons;
     private int maxButton; 
+    private boolean editMode; 
     
     private ArrayList<JButton> editButtons; 
-    private EditFrame editFrame; 
 
     public MainPanel(TodoController appController)
     {
@@ -70,6 +70,7 @@ public class MainPanel extends JPanel
         this.listButtons = new ArrayList<JButton>();
         this.editButtons = new ArrayList<JButton>();
         this.maxButton = 50; 
+        this.editMode = false;
 
         //Main Panel
         this.setLayout(new BorderLayout());
@@ -124,9 +125,11 @@ public class MainPanel extends JPanel
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
         { 
             this.maxButton = this.maxButton += 50; 
-            JButton newList = new JButton("Edit");
+            int index = i; 
+            JButton newList = new JButton("Delete");
             newList.setPreferredSize(new Dimension(10, 50));
-            newList.addActionListener(click -> this.editFrame = new EditFrame());
+            //are you sure you want to delete 
+            newList.addActionListener(click -> deleteItem(index));
             editButtons.add(newList);
 
         }
@@ -138,6 +141,7 @@ public class MainPanel extends JPanel
         this.add(listScroller, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
     }
+
 
     private void setupConstraints(JButton someButton, int index, String type)
     {
@@ -154,19 +158,50 @@ public class MainPanel extends JPanel
 
     private void editClicked()
     {
-        System.out.println("edit clicked");
-        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+        if (!editMode)
         {
-            layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -200, SpringLayout.EAST, listContainer);
+            //rename the edit button and change its function to normal mode 
+          System.out.println("edit clicked");
+          for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+          {
+              int index = i;
 
-            layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
-            layout.putConstraint(SpringLayout.EAST, editButtons.get(i), -50, SpringLayout.EAST, listContainer);
-            layout.putConstraint(SpringLayout.WEST, editButtons.get(i), 50, SpringLayout.EAST, listButtons.get(i));
+              //Constraints
+               layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -200, SpringLayout.EAST, listContainer);
+               layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
+                layout.putConstraint(SpringLayout.EAST, editButtons.get(i), -50, SpringLayout.EAST, listContainer);
+                layout.putConstraint(SpringLayout.WEST, editButtons.get(i), 50, SpringLayout.EAST, listButtons.get(i));
 
-            this.listContainer.add(editButtons.get(i));
-        }
-        
+            
+                //rename popup
+            
+                this.listContainer.add(editButtons.get(i));
+
+            }
+        this.editMode = true;
+        this.editList.setText("Cancel");
         this.revalidate();
+        }
+        else 
+        {
+            this.editList.setText("Edit list");
+            for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+            {
+                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
+                layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -50, SpringLayout.EAST, listContainer);
+                layout.putConstraint(SpringLayout.WEST, listButtons.get(i), 50, SpringLayout.WEST, listContainer);
+                this.listContainer.remove(editButtons.get(i));
+                this.revalidate();
+            }
+            this.revalidate();
+            this.editMode = false; 
+        }
+    }
+
+    private void renameItem(int index)
+    {
+        String newName = JOptionPane.showInputDialog("Rename " + listButtons.get(index).getText() + "?");
+        System.out.println(newName);
     }
 
     private void addButton()
@@ -189,8 +224,23 @@ public class MainPanel extends JPanel
 
     private void listClicked(String panel, String list, JButton button)
     {
-        System.out.println("List \"" + button.getText() + "\" Clicked");
-        this.app.switchPanel(panel);
+        if(editMode)
+        {
+            String newName = JOptionPane.showInputDialog("Rename " + button.getText() + "?");
+            System.out.println(newName);
+        }
+        else
+        {
+            System.out.println("List \"" + button.getText() + "\" Clicked");
+            this.app.switchPanel(panel);
+
+        }
     }
+
+    private void deleteItem(int index)
+    {
+        JOptionPane.showConfirmDialog(this, "Delete " + listButtons.get(index).getText() + "?");
+    }
+
     
 }
