@@ -5,9 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,8 +34,10 @@ public class MainPanel extends JPanel
     private JScrollPane listScroller;
     private SpringLayout layout;
     private ArrayList<JButton> listButtons;
-    private ArrayList<JButton> editButtons; 
     private int maxButton; 
+    
+    private ArrayList<JButton> editButtons; 
+    private EditFrame editFrame; 
 
     public MainPanel(TodoController appController)
     {
@@ -122,12 +122,11 @@ public class MainPanel extends JPanel
 
         //For the edit buttons
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
-        {
-            String listName = (IOController.loadFromFileAsArray("FILE TWO").get(i) + "-" + i); 
+        { 
             this.maxButton = this.maxButton += 50; 
-            JButton newList = new JButton(listName);
+            JButton newList = new JButton("Edit");
             newList.setPreferredSize(new Dimension(10, 50));
-            newList.addActionListener(click -> listClicked("todo", "list", newList));
+            newList.addActionListener(click -> this.editFrame = new EditFrame());
             editButtons.add(newList);
 
         }
@@ -184,12 +183,9 @@ public class MainPanel extends JPanel
         this.listContainer.setPreferredSize(new Dimension(800, maxButton));
         
         this.revalidate();
-        this.repaint();
 
         System.out.println("Button Added");
     }
-
-
 
     private void listClicked(String panel, String list, JButton button)
     {
