@@ -113,12 +113,16 @@ public class MainPanel extends JPanel
             newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
             newList.addActionListener(click -> listClicked("todo", "list", newList));
             listButtons.add(newList);
+            this.maxButton = maxButton += 50;
             this.listContainer.add(listButtons.get(i));
             setupConstraints(listButtons.get(i), i + 1, "List");
             System.out.println("button added");
         }
         //Update the second value on this to the size of all the buttons in the constraint
         this.listContainer.setPreferredSize(new Dimension(200, maxButton));
+        System.out.println(maxButton);
+       // this.listContainer.setMaximumSize(new Dimension(200, 400));
+
 
 
         //For the edit buttons
@@ -154,7 +158,6 @@ public class MainPanel extends JPanel
           System.out.println("edit clicked");
           for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
           { 
-              this.maxButton = this.maxButton += 50; 
               int index = i; 
               JButton newList = new JButton("Delete");
               newList.setPreferredSize(new Dimension(10, 50));
@@ -224,6 +227,7 @@ public class MainPanel extends JPanel
         
         this.listContainer.add(listButtons.get(listButtons.size() - 1));
         this.maxButton = this.maxButton += 50;         
+        this.listContainer.setPreferredSize(new Dimension(200, maxButton));
         this.revalidate();
 
         System.out.println("Button Added");
