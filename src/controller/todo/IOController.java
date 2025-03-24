@@ -21,8 +21,8 @@ public class IOController
                     byte[] bytes = currentLine.getBytes();
                     if (append)
                     {
-                        fileOutput.write('\n');
                         fileOutput.write(bytes);
+                        fileOutput.write('\n');
                     }
                     else
                     {

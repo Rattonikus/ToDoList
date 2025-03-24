@@ -101,9 +101,7 @@ public class MainPanel extends JPanel
         this.leftSpacer.setBackground(Color.red);
         this.rightSpacer.setBackground(Color.blue);
 
-        
-        
-        //List container panel
+      //List container panel
         this.listContainer.setLayout(layout); 
         //create list buttons
         for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
@@ -115,18 +113,12 @@ public class MainPanel extends JPanel
             listButtons.add(newList);
             this.maxButton = maxButton += 50;
             this.listContainer.add(listButtons.get(i));
-            setupConstraints(listButtons.get(i), i + 1, "List");
+            setupConstraints(listButtons.get(i), i, "List");
             System.out.println("button added");
         }
         //Update the second value on this to the size of all the buttons in the constraint
         this.listContainer.setPreferredSize(new Dimension(200, maxButton));
         System.out.println(maxButton);
-       // this.listContainer.setMaximumSize(new Dimension(200, 400));
-
-
-
-        //For the edit buttons
-
 
         //For scrollbar
         this.listScroller.setViewportView(listContainer);
@@ -135,7 +127,6 @@ public class MainPanel extends JPanel
         this.add(listScroller, BorderLayout.CENTER);
         this.add(topPanel, BorderLayout.NORTH);
     }
-
 
     private void setupConstraints(JButton someButton, int index, String type)
     {
@@ -154,27 +145,38 @@ public class MainPanel extends JPanel
     {
         if (!editMode)
         {
+            this.editButtons = new ArrayList<JButton>();
+
             //rename the edit button and change its function to normal mode 
           System.out.println("edit clicked");
-          for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
-          { 
-              int index = i; 
+          for (int i = 0; i<this.listButtons.size(); i++)
+          {
+            System.out.println("edit clicked FOR " + i);
+
+            int index = i; 
+              System.out.println(i);
               JButton newList = new JButton("Delete");
               newList.setPreferredSize(new Dimension(10, 50));
               //are you sure you want to delete 
-              newList.addActionListener(click -> deleteItem(index));
+              newList.addActionListener(click -> deleteItem(this.listButtons.get(index), newList, index));
               editButtons.add(newList);
 
           }
-          for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+          for (int i = 0; i<this.listButtons.size(); i++)
           {
+            System.out.println("edit clicked FOR 2");
+
               int index = i;
 
               //Constraints
+              System.out.println("edit clicked CONSTRAINTS");
+
                layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -200, SpringLayout.EAST, listContainer);
-               layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
+               layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
                 layout.putConstraint(SpringLayout.EAST, editButtons.get(i), -50, SpringLayout.EAST, listContainer);
                 layout.putConstraint(SpringLayout.WEST, editButtons.get(i), 50, SpringLayout.EAST, listButtons.get(i));
+
+                System.out.println("edit clicked CONSTRAINTS DONE " + i);
 
                 this.listContainer.add(editButtons.get(i));
 
@@ -189,10 +191,11 @@ public class MainPanel extends JPanel
         }
         else 
         {
+            this.editMode = false;
             this.editList.setText("Edit list");
-            for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+            for (int i = 0; i < this.listButtons.size(); i++)
             {
-                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), (i + 1) * 50, SpringLayout.NORTH, listContainer);
+                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
                 layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -50, SpringLayout.EAST, listContainer);
                 layout.putConstraint(SpringLayout.WEST, listButtons.get(i), 50, SpringLayout.WEST, listContainer);
                 this.listContainer.remove(editButtons.get(i));
@@ -204,7 +207,6 @@ public class MainPanel extends JPanel
             this.topPanel.repaint();
 
             this.revalidate();
-            this.editMode = false; 
         }
     }
 
@@ -221,7 +223,7 @@ public class MainPanel extends JPanel
         JButton newList = new JButton(newName);
         newList.setPreferredSize(new Dimension(10, 50)); 
         newList.addActionListener(click -> listClicked("todo", "list", newList));
-        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size(), "List");
+        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size() - 1, "List");
         listButtons.add(newList);
         
         
@@ -248,9 +250,43 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void deleteItem(int index)
+    private void deleteItem(JButton list, JButton delete, int index)
     {
-        JOptionPane.showConfirmDialog(this, "Delete " + listButtons.get(index).getText() + "?");
+        System.out.println(delete.getText() + index + " clicked " + list.getText() + " associated");
+        if (JOptionPane.showConfirmDialog(this, "Delete " + list.getText() + "?") == 0)
+        {
+            //remove from list, regenerate file from list, remove all items and add them back. 
+            this.revalidate();
+            this.listContainer.remove(list);
+            this.listButtons.remove(list);
+            this.listContainer.remove(delete);
+            this.editButtons.remove(delete);
+            // IOController.saveToFile("FILE TWO", "", false);
+
+            // System.out.println("Yes" + index);
+            for (int i = 0; i < listButtons.size(); i ++)
+            {
+                // IOController.saveToFile("FILE TWO", listButtons.get(i).getText(), true);
+                layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
+                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
+
+                this.revalidate();
+            }
+
+           // this.listButtons.remove(index);
+
+
+            this.listContainer.repaint();
+            this.revalidate();
+
+
+        }
+        else
+        {
+            System.out.println("no");
+        }
+        this.revalidate();
+
     }
 
     
