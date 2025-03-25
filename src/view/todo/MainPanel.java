@@ -67,8 +67,18 @@ public class MainPanel extends JPanel
         this.listContainer = new JPanel(); 
         this.listScroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.layout = new SpringLayout(); 
+
+        //Buttons
         this.listButtons = new ArrayList<JButton>();
-        this.editButtons = new ArrayList<JButton>();
+        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
+        {
+            JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
+            newList.setPreferredSize(new Dimension(20, 50)); 
+            newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
+            newList.addActionListener(click -> listClicked("todo", "list", newList));
+            listButtons.add(newList);
+        }
+
         this.maxButton = 50; 
         this.editMode = false;
 
@@ -101,24 +111,13 @@ public class MainPanel extends JPanel
         this.leftSpacer.setBackground(Color.red);
         this.rightSpacer.setBackground(Color.blue);
 
-      //List container panel
+        //ListContainer
         this.listContainer.setLayout(layout); 
-        //create list buttons
-        for (int i = 0; i<IOController.loadFromFileAsArray("FILE TWO").size(); i++)
-        {
-            JButton newList = new JButton(IOController.loadFromFileAsArray("FILE TWO").get(i));
-            newList.setPreferredSize(new Dimension(20, 50)); 
-            newList.setAlignmentX(this.listContainer.CENTER_ALIGNMENT);
-            newList.addActionListener(click -> listClicked("todo", "list", newList));
-            listButtons.add(newList);
-            this.maxButton = maxButton += 50;
-            this.listContainer.add(listButtons.get(i));
-            setupConstraints(listButtons.get(i), i, "List");
-            System.out.println("button added");
-        }
+
+        setupButtons(listButtons, "list");
+
         //Update the second value on this to the size of all the buttons in the constraint
-        this.listContainer.setPreferredSize(new Dimension(200, maxButton));
-        System.out.println(maxButton);
+        this.listContainer.setPreferredSize(new Dimension(200, listButtons.size() * 50));
 
         //For scrollbar
         this.listScroller.setViewportView(listContainer);
@@ -128,11 +127,28 @@ public class MainPanel extends JPanel
         this.add(topPanel, BorderLayout.NORTH);
     }
 
+    private void setupButtons(ArrayList<JButton> buttonList, String type)
+    {
+        for (int i = 0; i < buttonList.size(); i ++)
+        {
+            this.listContainer.add(buttonList.get(i));
+            setupConstraints(buttonList.get(i), i, type);
+        }
+    }
+
     private void setupConstraints(JButton someButton, int index, String type)
     {
         layout.putConstraint(SpringLayout.NORTH, someButton, index * 50, SpringLayout.NORTH, listContainer);
         layout.putConstraint(SpringLayout.EAST, someButton, -50, SpringLayout.EAST, listContainer);
-        layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.WEST, listContainer);
+        if (type == "edit")
+        {
+            layout.putConstraint(SpringLayout.EAST, listButtons.get(index), -200, SpringLayout.EAST, listContainer);
+            layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.EAST, listButtons.get(index));
+        }
+        else if (type == "list")
+        {
+            layout.putConstraint(SpringLayout.WEST, someButton, 50, SpringLayout.WEST, listContainer);
+        }
     }
 
     private void setupListeners()
@@ -146,48 +162,21 @@ public class MainPanel extends JPanel
         if (!editMode)
         {
             this.editButtons = new ArrayList<JButton>();
-
-            //rename the edit button and change its function to normal mode 
-          System.out.println("edit clicked");
-          for (int i = 0; i<this.listButtons.size(); i++)
-          {
-            System.out.println("edit clicked FOR " + i);
-
-            int index = i; 
-              System.out.println(i);
-              JButton newList = new JButton("Delete");
-              newList.setPreferredSize(new Dimension(10, 50));
-              //are you sure you want to delete 
-              newList.addActionListener(click -> deleteItem(this.listButtons.get(index), newList, index));
-              editButtons.add(newList);
-
-          }
-          for (int i = 0; i<this.listButtons.size(); i++)
-          {
-            System.out.println("edit clicked FOR 2");
-
-              int index = i;
-
-              //Constraints
-              System.out.println("edit clicked CONSTRAINTS");
-
-               layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -200, SpringLayout.EAST, listContainer);
-               layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
-                layout.putConstraint(SpringLayout.EAST, editButtons.get(i), -50, SpringLayout.EAST, listContainer);
-                layout.putConstraint(SpringLayout.WEST, editButtons.get(i), 50, SpringLayout.EAST, listButtons.get(i));
-
-                System.out.println("edit clicked CONSTRAINTS DONE " + i);
-
-                this.listContainer.add(editButtons.get(i));
-
-                //rename popup
-            }
-            this.topPanel.remove(this.addList);
+            for (int i = 0; i<this.listButtons.size(); i++)
+              {
+                     int index = i; 
+                     JButton listToDelete = this.listButtons.get(index);
+                   System.out.println(i);
+                  JButton newList = new JButton("Delete " + i);
+                  newList.setPreferredSize(new Dimension(10, 50));
+                  newList.addActionListener(click -> deleteItem(listToDelete, newList));
+                  editButtons.add(newList);
+              }
+            setupButtons(editButtons, "edit");
             this.topPanel.repaint();
-
-        this.editMode = true;
-        this.editList.setText("Cancel");
-        this.revalidate();
+            this.editMode = true;
+            this.editList.setText("Cancel");
+            this.revalidate();
         }
         else 
         {
@@ -195,9 +184,11 @@ public class MainPanel extends JPanel
             this.editList.setText("Edit list");
             for (int i = 0; i < this.listButtons.size(); i++)
             {
-                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
-                layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -50, SpringLayout.EAST, listContainer);
-                layout.putConstraint(SpringLayout.WEST, listButtons.get(i), 50, SpringLayout.WEST, listContainer);
+                // layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
+                // layout.putConstraint(SpringLayout.EAST, listButtons.get(i), -50, SpringLayout.EAST, listContainer);
+                // layout.putConstraint(SpringLayout.WEST, listButtons.get(i), 50, SpringLayout.WEST, listContainer);
+
+                setupConstraints(listButtons.get(i), i, "list");
                 this.listContainer.remove(editButtons.get(i));
                 this.revalidate();
             }
@@ -223,7 +214,7 @@ public class MainPanel extends JPanel
         JButton newList = new JButton(newName);
         newList.setPreferredSize(new Dimension(10, 50)); 
         newList.addActionListener(click -> listClicked("todo", "list", newList));
-        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size() - 1, "List");
+        setupConstraints(newList, IOController.loadFromFileAsArray("FILE TWO").size() - 1, "list");
         listButtons.add(newList);
         
         
@@ -250,42 +241,45 @@ public class MainPanel extends JPanel
         }
     }
 
-    private void deleteItem(JButton list, JButton delete, int index)
+    private void deleteItem(JButton itemToDelete, JButton deleteButton)
     {
-        System.out.println(delete.getText() + index + " clicked " + list.getText() + " associated");
-        if (JOptionPane.showConfirmDialog(this, "Delete " + list.getText() + "?") == 0)
-        {
-            //remove from list, regenerate file from list, remove all items and add them back. 
-            this.revalidate();
-            this.listContainer.remove(list);
-            this.listButtons.remove(list);
-            this.listContainer.remove(delete);
-            this.editButtons.remove(delete);
-            // IOController.saveToFile("FILE TWO", "", false);
-
-            // System.out.println("Yes" + index);
+        System.out.println(itemToDelete.getText() + " " + deleteButton.getText());
+        this.listContainer.remove(itemToDelete);
+        this.listContainer.remove(deleteButton);
+        this.editButtons.remove(deleteButton);
+        this.listButtons.remove(itemToDelete);
+        // {
+            //     //remove from list, regenerate file from list, remove all items and add them back. 
+            //     this.revalidate();
+            //     this.listContainer.remove(index);
+            //     this.listButtons.remove(index);
+            //     this.listContainer.remove(index);
+            //     this.editButtons.remove(index);
+            //     // IOController.saveToFile("FILE TWO", "", false);
+            
+            //     // System.out.println("Yes" + index);
             for (int i = 0; i < listButtons.size(); i ++)
             {
                 // IOController.saveToFile("FILE TWO", listButtons.get(i).getText(), true);
-                layout.putConstraint(SpringLayout.NORTH, editButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
-                layout.putConstraint(SpringLayout.NORTH, listButtons.get(i), i * 50, SpringLayout.NORTH, listContainer);
-
+                setupConstraints(listButtons.get(i), i, "list");
+                setupConstraints(editButtons.get(i), i, "edit");
                 this.revalidate();
             }
-
-           // this.listButtons.remove(index);
-
-
+            
+            //    // this.listButtons.remove(index);
+            
+            
             this.listContainer.repaint();
             this.revalidate();
+            // if (JOptionPane.showConfirmDialog(this, "Delete " + listButtons.get(index).getText() + "?") == 0)
+            
 
-
-        }
-        else
-        {
-            System.out.println("no");
-        }
-        this.revalidate();
+        // }
+        // else
+        // {
+        //     System.out.println("no");
+        // }
+        // this.revalidate();
 
     }
 
